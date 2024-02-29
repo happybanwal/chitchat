@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import AppStackNavigator from "./src/navigation/AppStackNavigator";
 import { useFonts } from "expo-font";
+import { PaperProvider } from "react-native-paper";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -10,19 +11,18 @@ export default function App() {
     "Manrope-Medium": require("./src/assets/fonts/Manrope-Medium.ttf"),
     "Manrope-Regular": require("./src/assets/fonts/Manrope-Regular.ttf"),
     "Manrope-Light": require("./src/assets/fonts/Manrope-Light.ttf"),
+    "Manrope-SemiBold": require("./src/assets/fonts/Manrope-SemiBold.ttf"),
   });
 
   if (!fontsLoaded) {
     return null;
   }
-  return <AppStackNavigator />;
+  return (
+    <PaperProvider>
+      <AppStackNavigator />
+    </PaperProvider>
+  );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+// #6A5BC2 -> blue
+// #F4F185 ->yellow
