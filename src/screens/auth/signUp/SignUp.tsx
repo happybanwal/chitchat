@@ -7,6 +7,8 @@ import {
   View,
   TouchableWithoutFeedback,
   ScrollView,
+  Modal,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -17,6 +19,7 @@ import { StatusBar } from "expo-status-bar";
 import FloatingTextInput from "../../../components/textInput/FloatingTextinput";
 import MobileInput from "../../../components/mobileInput/MobileInput";
 import CommonButton from "../../../components/button/CommonButton";
+import { Pressable } from "react-native";
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
@@ -24,6 +27,8 @@ const SignUp = () => {
     "SignUp"
   >;
   const navigation = useNavigation<signUpScreenProps>();
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -158,6 +163,7 @@ const SignUp = () => {
       navigation.navigate("Login");
     } else {
       console.log("no");
+      setModalVisible(true);
     }
   };
 
@@ -260,6 +266,36 @@ const SignUp = () => {
 
           {/* footer */}
           <View className="justify-end mt-10 mb-10">
+            {/* modal */}
+            <View style={styles.centeredView}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  Alert.alert("Modal has been closed.");
+                  setModalVisible(!modalVisible);
+                }}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => setModalVisible(false)}
+                >
+                  <View style={styles.modalBackground}>
+                    {/* Semi-transparent background */}
+                    <View style={styles.centeredView}>
+                      {/* Modal content */}
+                      <View style={styles.modalView}>
+                        <Text className="font-[Manrope-Regular]">
+                          Are you show bro!!!!
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
+              </Modal>
+            </View>
+            {/* modal */}
+
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate("Login");
@@ -283,5 +319,55 @@ const SignUp = () => {
     </TouchableWithoutFeedback>
   );
 };
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background color
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default SignUp;

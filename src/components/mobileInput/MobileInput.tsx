@@ -9,11 +9,9 @@ export type FI = {
 };
 
 const MobileInput = ({ onChangeText, mobileNumber }: FI) => {
-  const phoneInput = useRef<PhoneInput>(null);
   return (
     <View>
       <PhoneInput
-        ref={phoneInput}
         defaultValue={mobileNumber}
         defaultCode="IN"
         layout="first"
