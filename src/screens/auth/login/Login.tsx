@@ -17,6 +17,9 @@ import CommonButton from "../../../components/button/CommonButton";
 import { useNavigation } from "@react-navigation/native";
 import { Modal } from "react-native";
 
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { firebaseAuth } from "../../../../config/firebase.config";
+
 const Login = () => {
   type loginScreenProps = NativeStackNavigationProp<
     RootStackParamList,
@@ -49,9 +52,20 @@ const Login = () => {
     // console.log(text);
   };
 
-  const handleButton = () => {
+  const handleButton = async () => {
     if (email && password) {
-      console.log("ok");
+      await signInWithEmailAndPassword(firebaseAuth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log("login success :", user);
+          navigation.navigate("Home");
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
     } else {
       console.log("FIll empty");
       setModalVisible(true);
@@ -106,7 +120,7 @@ const Login = () => {
             )}
             Password */}
 
-          <CommonButton text="Sign up" onPress={handleButton} />
+          <CommonButton text="Login" onPress={handleButton} />
 
           {/* footer */}
           <View className="justify-end mt-10 mb-10">

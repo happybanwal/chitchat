@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   Alert,
+  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -19,7 +20,9 @@ import { StatusBar } from "expo-status-bar";
 import FloatingTextInput from "../../../components/textInput/FloatingTextinput";
 import MobileInput from "../../../components/mobileInput/MobileInput";
 import CommonButton from "../../../components/button/CommonButton";
-import { Pressable } from "react-native";
+
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { firebaseAuth } from "../../../../config/firebase.config";
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
@@ -147,7 +150,8 @@ const SignUp = () => {
     // console.log(text);
   };
 
-  const handleButton = () => {
+  // const auth = getAuth();
+  const handleButton = async () => {
     if (
       isValidEmail &&
       isValidFirstName &&
@@ -160,6 +164,22 @@ const SignUp = () => {
       phoneNumber &&
       password
     ) {
+      await createUserWithEmailAndPassword(firebaseAuth, email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          navigation.navigate("Home");
+          // console.log(user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode);
+          console.log(errorMessage);
+          // ..
+        });
+
       navigation.navigate("Login");
     } else {
       console.log("no");
