@@ -5,6 +5,7 @@ node_modules/
 
 # Expo
 .expo/
+.config/
 dist/
 web-build/
 
@@ -33,3 +34,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+#config (FIREBASE)
+
