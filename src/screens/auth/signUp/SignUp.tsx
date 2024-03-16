@@ -23,6 +23,7 @@ import CommonButton from "../../../components/button/CommonButton";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "../../../../config/firebase.config";
+import GoogleSignIn from "../GoogleSignIn";
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
@@ -334,6 +335,8 @@ const SignUp = () => {
             </TouchableOpacity>
           </View>
           {/* footer */}
+
+          <GoogleSignIn />
         </ScrollView>
       </SafeAreaView>
     </TouchableWithoutFeedback>

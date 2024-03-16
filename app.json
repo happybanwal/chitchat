@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "chitchat",
-    "slug": "chitchat",
+    "name": "chitchats",
+    "slug": "chitchats",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,18 +14,24 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.himanshu636.chitchat"
+      "bundleIdentifier": "com.himanshu636.chitchats"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.himanshu636.chitchat"
+      "package": "com.himanshu636.chitchats"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": []
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "b91aa6ce-19fc-428e-9d48-7af7d4566d47"
+      }
+    },
+    "scheme": "chitchats"
   }
 }

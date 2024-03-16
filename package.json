@@ -1,5 +1,5 @@
 {
-  "name": "chitchat",
+  "name": "chitchats",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -9,11 +9,17 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "1.21.0",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.18",
-    "expo": "~50.0.7",
+    "expo": "~50.0.13",
+    "expo-application": "~5.8.3",
+    "expo-auth-session": "~5.4.0",
+    "expo-crypto": "~12.8.1",
+    "expo-dev-client": "~3.3.10",
     "expo-font": "~11.10.3",
     "expo-status-bar": "~1.11.1",
+    "expo-web-browser": "~12.8.2",
     "firebase": "^10.8.1",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
