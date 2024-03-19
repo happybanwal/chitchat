@@ -19,6 +19,7 @@ import { Modal } from "react-native";
 
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "../../../../config/firebase.config";
+import GoogleSignIn from "../GoogleSignIn";
 
 const Login = () => {
   type loginScreenProps = NativeStackNavigationProp<
@@ -121,7 +122,22 @@ const Login = () => {
             )}
             Password */}
 
+          {/* Forget Password */}
+          {/* <TouchableOpacity onPress={handleForgetPassword}>
+            <Text>Forget Password</Text>
+          </TouchableOpacity> */}
+          {/* Forget Password */}
+
           <CommonButton text="Login" onPress={handleButton} />
+
+          {/* signUp with google */}
+          <View className=" justify-between">
+            <Text className="font-[Manrope-Light] text-center mt-4 mb-4">
+              Or
+            </Text>
+            <GoogleSignIn />
+          </View>
+          {/* signUp with google */}
 
           {/* footer */}
           <View className="justify-end mt-10 mb-10">

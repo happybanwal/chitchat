@@ -22,8 +22,9 @@ import MobileInput from "../../../components/mobileInput/MobileInput";
 import CommonButton from "../../../components/button/CommonButton";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { firebaseAuth } from "../../../../config/firebase.config";
+import { firebaseAuth, firestoreDB } from "../../../../config/firebase.config";
 import GoogleSignIn from "../GoogleSignIn";
+import { doc, setDoc } from "firebase/firestore";
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
@@ -165,13 +166,37 @@ const SignUp = () => {
       phoneNumber &&
       password
     ) {
+      // console.log(firstName, lastName, phoneNumber);
       await createUserWithEmailAndPassword(firebaseAuth, email, password)
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          navigation.navigate("Home");
-          // console.log(user);
-          // ...
+          console.log(user);
+
+          const data = {
+            _id: userCredential.user.uid,
+            fullName: firstName + " " + lastName,
+            // providerData: userCredential.user.providerData[0],
+            providerData: {
+              displayName: firstName,
+              email: email,
+              phoneNumber: phoneNumber,
+              photoURL: null,
+              // providerId: "password",
+              // uid: email,
+            },
+          };
+
+          setDoc(doc(firestoreDB, "users", userCredential?.user.uid), data)
+            .then(() => {
+              // navigation.navigate('BottomTabNavigator')
+
+              navigation.navigate("Home");
+              console.log("success signup and db creation");
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -181,7 +206,7 @@ const SignUp = () => {
           // ..
         });
 
-      navigation.navigate("Login");
+      // navigation.navigate("Login");
     } else {
       console.log("no");
       setModalVisible(true);
@@ -283,6 +308,14 @@ const SignUp = () => {
 
             <CommonButton text="Sign up" onPress={handleButton} />
           </View>
+          {/* signUp with google */}
+          <View className=" justify-between">
+            <Text className="font-[Manrope-Light] text-center mt-4 mb-4">
+              Or
+            </Text>
+            <GoogleSignIn />
+          </View>
+          {/* signUp with google */}
           {/* body */}
 
           {/* footer */}
@@ -335,8 +368,6 @@ const SignUp = () => {
             </TouchableOpacity>
           </View>
           {/* footer */}
-
-          <GoogleSignIn />
         </ScrollView>
       </SafeAreaView>
     </TouchableWithoutFeedback>

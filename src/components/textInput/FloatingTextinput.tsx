@@ -31,10 +31,11 @@ const FloatingTextInput = ({
         // @ts-ignore
         keyboardType={type ? type : "default"}
         style={{
-          fontFamily: "Manrope-Regular",
+          fontFamily: "Manrope-Light",
           marginBottom: 5,
           fontSize: 14,
           backgroundColor: "white",
+          color: "black",
         }}
         contentStyle={{ fontFamily: "Manrope-Regular" }}
         placeholder={placeholder}
@@ -46,11 +47,17 @@ const FloatingTextInput = ({
         activeOutlineColor={"#6A5BC2"}
         secureTextEntry={secureTextEntry ? true : false}
         // theme={DefaultTheme}
+        placeholderTextColor={"#8E8E93"}
         theme={{
+          ...DefaultTheme,
           fonts: {
             bodyLarge: {
               fontFamily: "Manrope-Light",
             },
+          },
+          colors: {
+            ...DefaultTheme.colors,
+            onSurfaceVariant: "#8E8E93",
           },
         }}
         right={
