@@ -4,6 +4,8 @@ import AppStackNavigator from "./src/navigation/AppStackNavigator";
 import { useFonts } from "expo-font";
 import { PaperProvider } from "react-native-paper";
 import React from "react";
+import { Provider } from "react-redux";
+import store from "./src/store";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -19,9 +21,12 @@ export default function App() {
     return null;
   }
   return (
+    <Provider store={store}>
+
     <PaperProvider>
       <AppStackNavigator />
     </PaperProvider>
+    </Provider>
   );
 }
 

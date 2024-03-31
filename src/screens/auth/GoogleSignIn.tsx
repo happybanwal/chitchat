@@ -15,6 +15,8 @@ import { googleButton } from "../../../assets/svg/SvgXML";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/Common";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { addUser } from "../../store/slices/UserSlice";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -27,6 +29,9 @@ const GoogleSignIn = () => {
   const navigation = useNavigation<loginScreenProps>();
 
   const [userInfo, setUserInfo] = useState();
+
+  const dispatch = useDispatch();
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
       "168876734053-vka4fiv14o9b77knik1ph8p890c7tu5n.apps.googleusercontent.com",
@@ -45,11 +50,35 @@ const GoogleSignIn = () => {
   }, [response]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (user: any) => {
       if (user) {
-        console.log(JSON.stringify(user, null, 2));
         // setUserInfo(user);
-        navigation.navigate("Home");
+        // const userInfo: any = JSON.stringify(user, null, 2);
+        // console.log(user.createdAt)
+        const userInfo = {
+          isLoggedIn: true,
+          uid: user?.uid,
+          providerData: {
+            providerId: user?.providerData[0]?.providerId,
+            uid: user?.providerData[0]?.uid || null,
+            displayName: user?.providerData[0]?.displayName || null,
+            email: user?.providerData[0]?.email || null,
+            phoneNumber: user?.providerData[0]?.phoneNumber || null,
+            photoURL: user?.providerData[0]?.photoURL || null,
+          },
+          stsTokenManager: {
+            refreshToken: user?.stsTokenManager?.refreshToken,
+            accessToken: user?.stsTokenManager?.accessToken,
+            expirationTime: user?.stsTokenManager?.expirationTime,
+          },
+        };
+
+        dispatch(
+          addUser(
+            userInfo
+          )
+        );
+        // navigation.navigate("Home");
       } else {
         console.log("no user");
       }
