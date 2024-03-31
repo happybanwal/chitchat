@@ -6,6 +6,7 @@ import { PaperProvider } from "react-native-paper";
 import React from "react";
 import { Provider } from "react-redux";
 import store from "./src/store";
+import AppRoute from "./src/navigation/AppRoute";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,11 +21,14 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+  
   return (
     <Provider store={store}>
 
     <PaperProvider>
-      <AppStackNavigator />
+      {/* <AppStackNavigator /> */}
+      <AppRoute/>
+      <StatusBar style="light" backgroundColor="#6A5BC2" />
     </PaperProvider>
     </Provider>
   );

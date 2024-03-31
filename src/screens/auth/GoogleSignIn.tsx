@@ -16,7 +16,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/Common";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
-import { addUser } from "../../store/slices/UserSlice";
+
+import { setSignIn } from "../../store/slices/AuthSlice";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -25,10 +26,6 @@ const GoogleSignIn = () => {
     RootStackParamList,
     "SignUp"
   >;
-
-  const navigation = useNavigation<loginScreenProps>();
-
-  const [userInfo, setUserInfo] = useState();
 
   const dispatch = useDispatch();
 
@@ -52,7 +49,6 @@ const GoogleSignIn = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (user: any) => {
       if (user) {
-        // setUserInfo(user);
         // const userInfo: any = JSON.stringify(user, null, 2);
         // console.log(user.createdAt)
         const userInfo = {
@@ -72,12 +68,8 @@ const GoogleSignIn = () => {
             expirationTime: user?.stsTokenManager?.expirationTime,
           },
         };
-
-        dispatch(
-          addUser(
-            userInfo
-          )
-        );
+        dispatch(setSignIn(userInfo))
+        // dispatch(addUser(userInfo));
         // navigation.navigate("Home");
       } else {
         console.log("no user");
@@ -96,7 +88,7 @@ const GoogleSignIn = () => {
         }}
       >
         <Text className="text-center font-[Manrope-Bold]">
-          Sign up with Google
+          Continue with Google
         </Text>
       </TouchableOpacity>
     </View>

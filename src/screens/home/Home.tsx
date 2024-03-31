@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteUser } from "../../store/slices/UserSlice";
 
 const Home = () => {
-  const data = useSelector((state:any) => {
-    return state.users;
-  });
+  // const data = useSelector((state:any) => {
+  //   return state.users;
+  // });
 
-  const dispatch=useDispatch()
+  // const dispatch=useDispatch()
 
   
-  useEffect(()=>{
-     console.log(JSON.stringify(data, null, 2))
-   },[])
+  // useEffect(()=>{
+  //    console.log(JSON.stringify(data, null, 2))
+  //  },[])
 
   return (
     <SafeAreaView>

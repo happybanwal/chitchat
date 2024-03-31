@@ -20,6 +20,8 @@ import { Modal } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "../../../../config/firebase.config";
 import GoogleSignIn from "../GoogleSignIn";
+import { setSignIn } from "../../../store/slices/AuthSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   type loginScreenProps = NativeStackNavigationProp<
@@ -38,6 +40,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const dispatch=useDispatch()
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -172,8 +175,19 @@ const Login = () => {
             {/* modal */}
 
             <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("SignUp");
+              // onPress={() => {
+              //   navigation.navigate("SignUp");
+              // }}
+              onPress={()=>{
+                console.log("press")
+                  const user = {
+                      isLoggedIn: true,
+                      email: 'jdoe@test.com',
+                      userName: 'johnDoe'
+                  };
+          
+                  dispatch(setSignIn(user));
+            
               }}
               className="mb-10 flex-row justify-center items-center"
             >
