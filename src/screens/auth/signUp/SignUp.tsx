@@ -20,17 +20,19 @@ import { StatusBar } from "expo-status-bar";
 import FloatingTextInput from "../../../components/textInput/FloatingTextinput";
 import MobileInput from "../../../components/mobileInput/MobileInput";
 import CommonButton from "../../../components/button/CommonButton";
-
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth, firestoreDB } from "../../../../config/firebase.config";
 import GoogleSignIn from "../GoogleSignIn";
 import { doc, setDoc } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { setSignIn } from "../../../store/slices/AuthSlice";
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
     RootStackParamList,
     "SignUp"
   >;
+  const dispatch = useDispatch();
   const navigation = useNavigation<signUpScreenProps>();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -168,35 +170,64 @@ const SignUp = () => {
     ) {
       // console.log(firstName, lastName, phoneNumber);
       await createUserWithEmailAndPassword(firebaseAuth, email, password)
-        .then((userCredential) => {
+        .then((userCredential: any) => {
           // Signed up
           const user = userCredential.user;
-          console.log(user);
+          console.log(JSON.stringify(user, null, 2));
 
           const data = {
-            _id: userCredential.user.uid,
-            fullName: firstName + " " + lastName,
+            uid: userCredential.user.uid,
             // providerData: userCredential.user.providerData[0],
+            // providerData: {
+            //   displayName: firstName+" "+lastName,
+            //   email: email,
+            //   phoneNumber: phoneNumber,
+            //   photoURL: null,
+            //   // providerId: "password",
+            //   // uid: email,
+            // },
             providerData: {
-              displayName: firstName,
-              email: email,
-              phoneNumber: phoneNumber,
-              photoURL: null,
-              // providerId: "password",
-              // uid: email,
+              providerId: user?.providerData[0]?.providerId,
+              uid: user?.providerData[0]?.uid || null,
+              displayName: user?.providerData[0]?.displayName || null,
+              email: user?.providerData[0]?.email || null,
+              phoneNumber: user?.providerData[0]?.phoneNumber || null,
+              photoURL: user?.providerData[0]?.photoURL || null,
             },
           };
 
+          const userInfo = {
+            isAuthenticated: true,
+            uid: user?.uid,
+            providerData: {
+              providerId: user?.providerData[0]?.providerId,
+              uid: user?.providerData[0]?.uid || null,
+              displayName: user?.providerData[0]?.displayName || null,
+              email: user?.providerData[0]?.email || null,
+              phoneNumber: user?.providerData[0]?.phoneNumber || null,
+              photoURL: user?.providerData[0]?.photoURL || null,
+            },
+            stsTokenManager: {
+              refreshToken: user?.stsTokenManager?.refreshToken,
+              accessToken: user?.stsTokenManager?.accessToken,
+              expirationTime: user?.stsTokenManager?.expirationTime,
+            },
+          };
+
+          // setDATABASE in FIRESTORE
           setDoc(doc(firestoreDB, "users", userCredential?.user.uid), data)
             .then(() => {
               // navigation.navigate('BottomTabNavigator')
 
-              navigation.navigate("Home");
+              // navigation.navigate("Home");
               console.log("success signup and db creation");
             })
             .catch((error) => {
               console.log(error);
             });
+
+            // REDUX 
+            dispatch(setSignIn(userInfo))
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -205,8 +236,6 @@ const SignUp = () => {
           console.log(errorMessage);
           // ..
         });
-
-      // navigation.navigate("Login");
     } else {
       console.log("no");
       setModalVisible(true);

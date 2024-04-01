@@ -1,6 +1,4 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import AppStackNavigator from "./src/navigation/AppStackNavigator";
 import { useFonts } from "expo-font";
 import { PaperProvider } from "react-native-paper";
 import React from "react";

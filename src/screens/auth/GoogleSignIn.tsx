@@ -18,6 +18,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 
 import { setSignIn } from "../../store/slices/AuthSlice";
+import { storeUserSession } from "../../expostorage/LocalStorage";
+// import { setLocalData } from "../../expostorage/Expostorage";
+
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -30,11 +33,11 @@ const GoogleSignIn = () => {
   const dispatch = useDispatch();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId:
-      "168876734053-vka4fiv14o9b77knik1ph8p890c7tu5n.apps.googleusercontent.com",
-    webClientId:
-      "168876734053-b264gl5o659nk67edoo5nd8ml70sk9u7.apps.googleusercontent.comgi",
-  });
+    // @ts-ignore
+    androidClientId:process.env.EXPO_PUBLIC_ANDROIDCLIENTID,
+     // @ts-ignore
+    webClientId:process.env.EXPO_PUBLIC_WEBCLINETID
+  })
 
   useEffect(() => {
     if (response?.type == "success") {
@@ -46,34 +49,46 @@ const GoogleSignIn = () => {
     }
   }, [response]);
 
+  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (user: any) => {
-      if (user) {
-        // const userInfo: any = JSON.stringify(user, null, 2);
-        // console.log(user.createdAt)
-        const userInfo = {
-          isLoggedIn: true,
-          uid: user?.uid,
-          providerData: {
-            providerId: user?.providerData[0]?.providerId,
-            uid: user?.providerData[0]?.uid || null,
-            displayName: user?.providerData[0]?.displayName || null,
-            email: user?.providerData[0]?.email || null,
-            phoneNumber: user?.providerData[0]?.phoneNumber || null,
-            photoURL: user?.providerData[0]?.photoURL || null,
-          },
-          stsTokenManager: {
-            refreshToken: user?.stsTokenManager?.refreshToken,
-            accessToken: user?.stsTokenManager?.accessToken,
-            expirationTime: user?.stsTokenManager?.expirationTime,
-          },
-        };
-        dispatch(setSignIn(userInfo))
-        // dispatch(addUser(userInfo));
-        // navigation.navigate("Home");
-      } else {
-        console.log("no user");
+      try{
+        if (user) {
+          // const userInfo: any = JSON.stringify(user, null, 2);
+          // console.log(user.createdAt)
+          const userInfo = {
+            isAuthenticated: true,
+            uid: user?.uid,
+            providerData: {
+              providerId: user?.providerData[0]?.providerId,
+              uid: user?.providerData[0]?.uid || null,
+              displayName: user?.providerData[0]?.displayName || null,
+              email: user?.providerData[0]?.email || null,
+              phoneNumber: user?.providerData[0]?.phoneNumber || null,
+              photoURL: user?.providerData[0]?.photoURL || null,
+            },
+            stsTokenManager: {
+              refreshToken: user?.stsTokenManager?.refreshToken,
+              accessToken: user?.stsTokenManager?.accessToken,
+              expirationTime: user?.stsTokenManager?.expirationTime,
+            },
+          };
+          dispatch(setSignIn(userInfo))
+          storeUserSession(user)
+
+          // setLocalData("_userData",userInfo)
+
+          // dispatch(addUser(userInfo));
+          // navigation.navigate("Home");
+        } else {
+          console.log("no user");
+        }
+      }catch(error){
+        console.error("Error during onAuthStateChanged:", error);
+
       }
+      
     });
     return () => unsubscribe();
   }, []);

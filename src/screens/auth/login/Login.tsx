@@ -41,6 +41,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch=useDispatch()
+
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -59,11 +60,29 @@ const Login = () => {
   const handleButton = async () => {
     if (email && password) {
       await signInWithEmailAndPassword(firebaseAuth, email, password)
-        .then((userCredential) => {
+        .then((userCredential:any) => {
           // Signed in
           const user = userCredential.user;
           console.log("login success :", user);
-          navigation.navigate("Home");
+          // navigation.navigate("Home");
+          const userInfo = {
+            isAuthenticated: true,
+            uid: user?.uid,
+            providerData: {
+              providerId: user?.providerData[0]?.providerId,
+              uid: user?.providerData[0]?.uid || null,
+              displayName: user?.providerData[0]?.displayName || null,
+              email: user?.providerData[0]?.email || null,
+              phoneNumber: user?.providerData[0]?.phoneNumber || null,
+              photoURL: user?.providerData[0]?.photoURL || null,
+            },
+            stsTokenManager: {
+              refreshToken: user?.stsTokenManager?.refreshToken,
+              accessToken: user?.stsTokenManager?.accessToken,
+              expirationTime: user?.stsTokenManager?.expirationTime,
+            },
+          };
+          dispatch(setSignIn(userInfo))
           // ...
         })
         .catch((error) => {
@@ -175,20 +194,10 @@ const Login = () => {
             {/* modal */}
 
             <TouchableOpacity
-              // onPress={() => {
-              //   navigation.navigate("SignUp");
-              // }}
-              onPress={()=>{
-                console.log("press")
-                  const user = {
-                      isLoggedIn: true,
-                      email: 'jdoe@test.com',
-                      userName: 'johnDoe'
-                  };
-          
-                  dispatch(setSignIn(user));
-            
+              onPress={() => {
+                navigation.navigate("SignUp");
               }}
+              
               className="mb-10 flex-row justify-center items-center"
             >
               <Text className="" style={{ fontFamily: "Manrope-Medium" }}>

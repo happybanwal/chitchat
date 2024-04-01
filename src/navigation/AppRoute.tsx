@@ -1,20 +1,82 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import { selectIsLoggedIn } from "../store/slices/UserSlice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigator from "./AppNavigator";
 import AuthNavigator from "./AuthNavigator";
-import { selectIsLoggedIn } from "../store/slices/AuthSlice";
+
+import { retrieveUserSession } from "../expostorage/LocalStorage";
+import { selectIsAuthenticated, setSignIn } from "../store/slices/AuthSlice";
+import SplashScreen from "../screens/SplashScreen";
 
 const AppRoute = () => {
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const [loading, setLoading] = useState(true);
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("entering approute ");
+      try {
+        const data = await retrieveUserSession();
+
+        const tokenExpirationTime =
+          data?.value?.stsTokenManager?.expirationTime;
+
+        if (tokenExpirationTime < Date.now()) {
+          console.log("Token has expired");
+          setLoading(false);
+        } else {
+          console.log("Token is not expired");
+
+          const userInfo = {
+            isAuthenticated: true,
+            uid: data?.value?.uid,
+            providerData: {
+              providerId: data?.value?.providerData[0]?.providerId,
+              uid: data?.value?.providerData[0]?.uid || null,
+              displayName: data?.value?.providerData[0]?.displayName || null,
+              email: data?.value?.providerData[0]?.email || null,
+              phoneNumber: data?.value?.providerData[0]?.phoneNumber || null,
+              photoURL: data?.value?.providerData[0]?.photoURL || null,
+            },
+            stsTokenManager: {
+              refreshToken: data?.value?.stsTokenManager?.refreshToken,
+              accessToken: data?.value?.stsTokenManager?.accessToken,
+              expirationTime: data?.value?.stsTokenManager?.expirationTime,
+            },
+          };
+
+          dispatch(setSignIn(userInfo));
+          setLoading(false);
+        
+        }
+      } catch (error) {
+        console.log("Error retrieving user session:", error);
+      }
+    };
+
+    fetchData(); // call the fetchData function
+  }, []);
+
+  useEffect(()=>{
+    console.log({ isAuthenticated: isAuthenticated });
+  },[loading])
 
   return (
     <NavigationContainer>
+      {loading ? (
+        <SplashScreen />
+      ) : isAuthenticated ? (
+        <AppNavigator />
+      ) : (
+        <AuthNavigator />
+      )}
       {/* Conditional stack navigator rendering based on login state */}
 
-      {isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
+      {/* {isAuthenticated ? <AppNavigator /> : <AuthNavigator />} */}
     </NavigationContainer>
   );
 };

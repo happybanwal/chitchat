@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  isLoggedIn: false,
+  isAuthenticated: false,
   uid: null,
   providerData: {
     providerId: null,
@@ -23,7 +23,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setSignIn: (state, action) => {
-      state.isLoggedIn = action.payload.isLoggedIn;
+      state.isAuthenticated = action.payload.isAuthenticated;
       state.uid = action.payload.uid;
       // providerData
       state.providerData.providerId = action.payload.providerData.providerId;
@@ -41,7 +41,7 @@ const authSlice = createSlice({
         action.payload.stsTokenManager.expirationTime;
     },
     setSignOut: (state) => {
-      state.isLoggedIn = false;
+      state.isAuthenticated = false;
       state.uid = null;
       // providerData
       state.providerData.providerId = null;
@@ -50,7 +50,7 @@ const authSlice = createSlice({
       state.providerData.email = null;
       state.providerData.phoneNumber = null;
       state.providerData.photoURL = null;
-       // stsTokenManager
+      // stsTokenManager
       state.stsTokenManager.refreshToken = null;
       state.stsTokenManager.accessToken = null;
       state.stsTokenManager.expirationTime = null;
@@ -60,7 +60,7 @@ const authSlice = createSlice({
 
 export const { setSignIn, setSignOut } = authSlice.actions;
 
-export const selectIsLoggedIn = (state:any) => state.userAuth.isLoggedIn;
+export const selectIsAuthenticated = (state: any) => state.userAuth.isAuthenticated;
 // export const selectEmail = (state) => state.userAuth.email;
 // export const selectUserName = (state) => state.userAuth.userName;
 
