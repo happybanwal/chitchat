@@ -1,64 +1,49 @@
 import EncryptedStorage from "react-native-encrypted-storage";
 
-// user LOCAL STORAGE
+// Store user session in encrypted storage
 export const storeUserSession = async (value: any) => {
   try {
-    // console.log(value);
     await EncryptedStorage.setItem(
       "user_session",
       JSON.stringify({
         value,
       })
     );
-    console.log("Congrats! You've just stored your first value!");
-
-    // Congrats! You've just stored your first value!
+    console.log("Congrats! You've just stored your user value!");
   } catch (error) {
-    // There was an error on the native side
-    console.log("here was an error on the native side");
+    console.error("Error storing user session:", error);
   }
 };
 
+// Retrieve user session from encrypted storage
 export const retrieveUserSession = async () => {
   try {
     const session: any = await EncryptedStorage.getItem("user_session");
-    if (session !== undefined) {
-      // console.log(session)
-      // Congrats! You've just retrieved your first value!
-      console.log("Congrats! You've just retrieved your first value!");
+    if (session !== null) {
+      console.log("Congrats! You've just retrieved your user value!");
       return JSON.parse(session);
     }
-
-    // Congrats! You've just stored your first value!
   } catch (error) {
-    // There was an error on the native side
-    console.log("here was an error on the native side");
+    console.error("Error retrieving user session:", error);
   }
 };
 
+// Remove user session from encrypted storage
 export const removeUserSession = async () => {
   try {
     await EncryptedStorage.removeItem("user_session");
-
-    console.log("Congrats! You've just removed your first value!");
-
-    // Congrats! You've just stored your first value!
+    console.log("Congrats! You've just removed your user value!");
   } catch (error) {
-    // There was an error on the native side
-    console.log("here was an error on the native side");
+    console.error("Error removing user session:", error);
   }
 };
 
-// REMOVE ALL LOCAL STORAGE
+// Clear all data from encrypted storage
 export const clearStorage = async () => {
   try {
     await EncryptedStorage.clear();
-
     console.log("Congrats! You've just cleared the device storage!");
-
-    // Congrats! You've just stored your first value!
   } catch (error) {
-    // There was an error on the native side
-    console.log("here was an error on the native side");
+    console.error("Error clearing device storage:", error);
   }
 };

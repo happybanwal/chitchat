@@ -2,7 +2,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { retrieveUserSession } from "../../expostorage/LocalStorage";
+import { clearStorage, removeUserSession, retrieveUserSession } from "../../expostorage/LocalStorage";
+import { signOut } from "firebase/auth";
+import { firebaseAuth } from "../../../config/firebase.config";
+import { setSignOut } from "../../store/slices/AuthSlice";
 
 
 const Home = () => {
@@ -10,7 +13,7 @@ const Home = () => {
   //   return state.users;
   // });
 
-  // const dispatch=useDispatch()
+  const dispatch=useDispatch()
 
 
   useEffect(() => {
@@ -31,10 +34,24 @@ const Home = () => {
   
   }, []);
 
+  const handleButton = async () => {
+    // const dispatch = useDispatch();
+    try {
+      await signOut(firebaseAuth); // Sign out the user
+      await clearStorage(); // Clear user session from storage
+      await removeUserSession()
+      dispatch(setSignOut())
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    }
+  };
+
   return (
     <SafeAreaView>
       <Pressable onPress={()=>{
         // dispatch(deleteUser())
+        handleButton()
+       
       }}>
 
       <View>

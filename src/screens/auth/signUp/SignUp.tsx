@@ -26,6 +26,7 @@ import GoogleSignIn from "../GoogleSignIn";
 import { doc, setDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { setSignIn } from "../../../store/slices/AuthSlice";
+import { storeUserSession } from "../../../expostorage/LocalStorage";
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
@@ -177,15 +178,6 @@ const SignUp = () => {
 
           const data = {
             uid: userCredential.user.uid,
-            // providerData: userCredential.user.providerData[0],
-            // providerData: {
-            //   displayName: firstName+" "+lastName,
-            //   email: email,
-            //   phoneNumber: phoneNumber,
-            //   photoURL: null,
-            //   // providerId: "password",
-            //   // uid: email,
-            // },
             providerData: {
               providerId: user?.providerData[0]?.providerId,
               uid: user?.providerData[0]?.uid || null,
@@ -200,7 +192,7 @@ const SignUp = () => {
             isAuthenticated: true,
             uid: user?.uid,
             providerData: {
-              providerId: user?.providerData[0]?.providerId,
+              providerId: user?.providerData[0]?.providerId ||null,
               uid: user?.providerData[0]?.uid || null,
               displayName: user?.providerData[0]?.displayName || null,
               email: user?.providerData[0]?.email || null,
@@ -208,26 +200,24 @@ const SignUp = () => {
               photoURL: user?.providerData[0]?.photoURL || null,
             },
             stsTokenManager: {
-              refreshToken: user?.stsTokenManager?.refreshToken,
-              accessToken: user?.stsTokenManager?.accessToken,
-              expirationTime: user?.stsTokenManager?.expirationTime,
+              refreshToken: user?.stsTokenManager?.refreshToken || null,
+              accessToken: user?.stsTokenManager?.accessToken || null,
+              expirationTime: user?.stsTokenManager?.expirationTime || null,
             },
           };
 
           // setDATABASE in FIRESTORE
           setDoc(doc(firestoreDB, "users", userCredential?.user.uid), data)
             .then(() => {
-              // navigation.navigate('BottomTabNavigator')
-
-              // navigation.navigate("Home");
               console.log("success signup and db creation");
             })
             .catch((error) => {
               console.log(error);
             });
 
-            // REDUX 
-            dispatch(setSignIn(userInfo))
+          // REDUX
+          dispatch(setSignIn(userInfo));
+          storeUserSession(user);
         })
         .catch((error) => {
           const errorCode = error.code;

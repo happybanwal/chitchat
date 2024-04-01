@@ -7,7 +7,11 @@ import AppNavigator from "./AppNavigator";
 import AuthNavigator from "./AuthNavigator";
 
 import { retrieveUserSession } from "../expostorage/LocalStorage";
-import { selectIsAuthenticated, setSignIn } from "../store/slices/AuthSlice";
+import {
+  selectIsAuthenticated,
+  setSignIn,
+  setSignOut,
+} from "../store/slices/AuthSlice";
 import SplashScreen from "../screens/SplashScreen";
 
 const AppRoute = () => {
@@ -21,37 +25,43 @@ const AppRoute = () => {
       console.log("entering approute ");
       try {
         const data = await retrieveUserSession();
+        if (data) {
+          console.log("data found");
 
-        const tokenExpirationTime =
-          data?.value?.stsTokenManager?.expirationTime;
+          const tokenExpirationTime =
+            data?.value?.stsTokenManager?.expirationTime;
 
-        if (tokenExpirationTime < Date.now()) {
-          console.log("Token has expired");
-          setLoading(false);
+          if (tokenExpirationTime < Date.now()) {
+            console.log("Token has expired");
+            setLoading(false);
+          } else {
+            console.log("Token is not expired");
+
+            const userInfo = {
+              isAuthenticated: true,
+              uid: data?.value?.uid,
+              providerData: {
+                providerId: data?.value?.providerData[0]?.providerId,
+                uid: data?.value?.providerData[0]?.uid || null,
+                displayName: data?.value?.providerData[0]?.displayName || null,
+                email: data?.value?.providerData[0]?.email || null,
+                phoneNumber: data?.value?.providerData[0]?.phoneNumber || null,
+                photoURL: data?.value?.providerData[0]?.photoURL || null,
+              },
+              stsTokenManager: {
+                refreshToken: data?.value?.stsTokenManager?.refreshToken,
+                accessToken: data?.value?.stsTokenManager?.accessToken,
+                expirationTime: data?.value?.stsTokenManager?.expirationTime,
+              },
+            };
+
+            dispatch(setSignIn(userInfo));
+            setLoading(false);
+          }
         } else {
-          console.log("Token is not expired");
-
-          const userInfo = {
-            isAuthenticated: true,
-            uid: data?.value?.uid,
-            providerData: {
-              providerId: data?.value?.providerData[0]?.providerId,
-              uid: data?.value?.providerData[0]?.uid || null,
-              displayName: data?.value?.providerData[0]?.displayName || null,
-              email: data?.value?.providerData[0]?.email || null,
-              phoneNumber: data?.value?.providerData[0]?.phoneNumber || null,
-              photoURL: data?.value?.providerData[0]?.photoURL || null,
-            },
-            stsTokenManager: {
-              refreshToken: data?.value?.stsTokenManager?.refreshToken,
-              accessToken: data?.value?.stsTokenManager?.accessToken,
-              expirationTime: data?.value?.stsTokenManager?.expirationTime,
-            },
-          };
-
-          dispatch(setSignIn(userInfo));
+          console.log("data not found");
+          dispatch(setSignOut());
           setLoading(false);
-        
         }
       } catch (error) {
         console.log("Error retrieving user session:", error);
@@ -61,9 +71,9 @@ const AppRoute = () => {
     fetchData(); // call the fetchData function
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log({ isAuthenticated: isAuthenticated });
-  },[loading])
+  }, [loading]);
 
   return (
     <NavigationContainer>

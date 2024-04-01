@@ -41,11 +41,11 @@ const GoogleSignIn = () => {
 
   useEffect(() => {
     if (response?.type == "success") {
-      console.log("response :", response?.type);
+      console.log("Google sign-in success:", response.type);
       const { id_token } = response.params;
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(firebaseAuth, credential);
-      // navigation.navigate("Home");
+    
     }
   }, [response]);
 
@@ -61,7 +61,7 @@ const GoogleSignIn = () => {
             isAuthenticated: true,
             uid: user?.uid,
             providerData: {
-              providerId: user?.providerData[0]?.providerId,
+              providerId: user?.providerData[0]?.providerId || null,
               uid: user?.providerData[0]?.uid || null,
               displayName: user?.providerData[0]?.displayName || null,
               email: user?.providerData[0]?.email || null,
@@ -69,20 +69,15 @@ const GoogleSignIn = () => {
               photoURL: user?.providerData[0]?.photoURL || null,
             },
             stsTokenManager: {
-              refreshToken: user?.stsTokenManager?.refreshToken,
-              accessToken: user?.stsTokenManager?.accessToken,
-              expirationTime: user?.stsTokenManager?.expirationTime,
+              refreshToken: user?.stsTokenManager?.refreshToken || null,
+              accessToken: user?.stsTokenManager?.accessToken || null,
+              expirationTime: user?.stsTokenManager?.expirationTime || null,
             },
           };
           dispatch(setSignIn(userInfo))
           storeUserSession(user)
-
-          // setLocalData("_userData",userInfo)
-
-          // dispatch(addUser(userInfo));
-          // navigation.navigate("Home");
         } else {
-          console.log("no user");
+          console.log("No user authenticated.");
         }
       }catch(error){
         console.error("Error during onAuthStateChanged:", error);

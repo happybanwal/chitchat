@@ -22,6 +22,7 @@ import { firebaseAuth } from "../../../../config/firebase.config";
 import GoogleSignIn from "../GoogleSignIn";
 import { setSignIn } from "../../../store/slices/AuthSlice";
 import { useDispatch } from "react-redux";
+import { storeUserSession } from "../../../expostorage/LocalStorage";
 
 const Login = () => {
   type loginScreenProps = NativeStackNavigationProp<
@@ -40,7 +41,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -60,16 +61,15 @@ const Login = () => {
   const handleButton = async () => {
     if (email && password) {
       await signInWithEmailAndPassword(firebaseAuth, email, password)
-        .then((userCredential:any) => {
+        .then((userCredential: any) => {
           // Signed in
           const user = userCredential.user;
           console.log("login success :", user);
-          // navigation.navigate("Home");
           const userInfo = {
             isAuthenticated: true,
             uid: user?.uid,
             providerData: {
-              providerId: user?.providerData[0]?.providerId,
+              providerId: user?.providerData[0]?.providerId || null,
               uid: user?.providerData[0]?.uid || null,
               displayName: user?.providerData[0]?.displayName || null,
               email: user?.providerData[0]?.email || null,
@@ -77,13 +77,13 @@ const Login = () => {
               photoURL: user?.providerData[0]?.photoURL || null,
             },
             stsTokenManager: {
-              refreshToken: user?.stsTokenManager?.refreshToken,
-              accessToken: user?.stsTokenManager?.accessToken,
-              expirationTime: user?.stsTokenManager?.expirationTime,
+              refreshToken: user?.stsTokenManager?.refreshToken || null,
+              accessToken: user?.stsTokenManager?.accessToken || null,
+              expirationTime: user?.stsTokenManager?.expirationTime || null,
             },
           };
-          dispatch(setSignIn(userInfo))
-          // ...
+          dispatch(setSignIn(userInfo));
+          storeUserSession(userCredential);
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -197,7 +197,6 @@ const Login = () => {
               onPress={() => {
                 navigation.navigate("SignUp");
               }}
-              
               className="mb-10 flex-row justify-center items-center"
             >
               <Text className="" style={{ fontFamily: "Manrope-Medium" }}>
