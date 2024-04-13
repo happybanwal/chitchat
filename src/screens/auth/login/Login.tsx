@@ -96,6 +96,8 @@ const Login = () => {
     }
   };
 
+  
+
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <SafeAreaView className="bg-[#FFFFFF] flex-1 p-6">

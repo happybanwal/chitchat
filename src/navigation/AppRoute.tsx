@@ -15,8 +15,8 @@ import {
 import SplashScreen from "../screens/SplashScreen";
 
 const AppRoute = () => {
+  
   const [loading, setLoading] = useState(true);
-
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const dispatch = useDispatch();
 

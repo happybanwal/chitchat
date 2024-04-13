@@ -192,7 +192,7 @@ const SignUp = () => {
             isAuthenticated: true,
             uid: user?.uid,
             providerData: {
-              providerId: user?.providerData[0]?.providerId ||null,
+              providerId: user?.providerData[0]?.providerId || null,
               uid: user?.providerData[0]?.uid || null,
               displayName: user?.providerData[0]?.displayName || null,
               email: user?.providerData[0]?.email || null,
@@ -229,6 +229,27 @@ const SignUp = () => {
     } else {
       console.log("no");
       setModalVisible(true);
+    }
+  };
+
+  const handleRegister = async () => {
+    try {
+      if (email && password) {
+        const userCredential = await createUserWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        console.log(JSON.stringify(user, null, 2));
+      } else {
+        console.log("Fill all fields");
+      }
+    } catch (error:any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode);
+      console.log(errorMessage);
     }
   };
 

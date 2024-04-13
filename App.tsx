@@ -19,15 +19,13 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
     <Provider store={store}>
-
-    <PaperProvider>
-      {/* <AppStackNavigator /> */}
-      <AppRoute/>
-      <StatusBar style="light" backgroundColor="#6A5BC2" />
-    </PaperProvider>
+      <PaperProvider>
+        <AppRoute />
+        <StatusBar style="light" backgroundColor="#6A5BC2" />
+      </PaperProvider>
     </Provider>
   );
 }
