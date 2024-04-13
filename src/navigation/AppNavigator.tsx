@@ -2,6 +2,7 @@ import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../screens/home/Home";
 import Profile from "../screens/profile/Profile";
+import ChatScreen from "../screens/chats/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ const AppNavigator = () => {
     >
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
     </Stack.Navigator>
   );
 };

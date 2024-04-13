@@ -1,6 +1,4 @@
-import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
-// import { selectIsLoggedIn } from "../store/slices/UserSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigator from "./AppNavigator";

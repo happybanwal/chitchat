@@ -15,6 +15,7 @@ import { RootStackParamList } from "../../types/Common";
 import { useNavigation } from "@react-navigation/native";
 import { Icon, IconButton } from "react-native-paper";
 import HomeHeader from "./components/HomeHeader";
+import MessageCard from "./components/MessageCard";
 
 const Home = () => {
   type loginScreenProps = NativeStackNavigationProp<
@@ -23,65 +24,17 @@ const Home = () => {
   >;
 
   const navigation = useNavigation<loginScreenProps>();
-  // const data = useSelector((state: any) => {
-  //   return state.userAuth;
-  // });
-
-  // const dispatch = useDispatch();
-
-  // console.log(data);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       console.log("Home")
-  //       const data = await retrieveUserSession();
-  //       // JSON.stringify(data,null,2)
-
-  //       // console.log(JSON.stringify(data,null,2))
-
-  //     } catch (error) {
-  //       console.log("Error retrieving user session:", error);
-  //     }
-  //   };
-
-  //   fetchData(); // call the fetchData function
-
-  // }, []);
-
-  // const handleButton = async () => {
-
-  //   try {
-  //     await signOut(firebaseAuth); // Sign out the user
-  //     await clearStorage(); // Clear user session from storage
-  //     await removeUserSession()
-  //     dispatch(setSignOut())
-  //   } catch (error) {
-  //     console.error('Error during sign out:', error);
-  //   }
-  // };
-
- 
 
   return (
     <SafeAreaView className="bg-[#FFFFFF] flex-1 ">
       <View className="flex-1 bg-[#6A5BC2]">
         {/* headers */}
-        <HomeHeader/>
+        <HomeHeader />
         {/* headers */}
 
-        {/* body */}
-        <View style={{ flex: 2 / 3 }} className="p-6 rounded-t-[32px] bg-white">
-          <Pressable
-            className="mt-2"
-            onPress={() => {
-              navigation.navigate("Profile");
-            }}
-          >
-            <Text>Profile</Text>
-          </Pressable>
-        </View>
-        {/* body */}
+        {/* Message section */}
+        <MessageCard />
+        {/* Message section */}
       </View>
     </SafeAreaView>
   );
@@ -89,4 +42,4 @@ const Home = () => {
 
 export default Home;
 
-const styles = StyleSheet.create({});
+
