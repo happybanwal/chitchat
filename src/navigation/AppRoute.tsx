@@ -13,61 +13,63 @@ import {
 import SplashScreen from "../screens/SplashScreen";
 
 const AppRoute = () => {
-  
   const [loading, setLoading] = useState(true);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("entering approute ");
       try {
+        console.log("entering approute ");
         const data = await retrieveUserSession();
-        if (data) {
-          console.log("data found");
-
-          const tokenExpirationTime =
-            data?.value?.stsTokenManager?.expirationTime;
-
-          if (tokenExpirationTime < Date.now()) {
-            console.log("Token has expired");
-            setLoading(false);
-          } else {
-            console.log("Token is not expired");
-
-            const userInfo = {
-              isAuthenticated: true,
-              uid: data?.value?.uid,
-              providerData: {
-                providerId: data?.value?.providerData[0]?.providerId,
-                uid: data?.value?.providerData[0]?.uid || null,
-                displayName: data?.value?.providerData[0]?.displayName || null,
-                email: data?.value?.providerData[0]?.email || null,
-                phoneNumber: data?.value?.providerData[0]?.phoneNumber || null,
-                photoURL: data?.value?.providerData[0]?.photoURL || null,
-              },
-              stsTokenManager: {
-                refreshToken: data?.value?.stsTokenManager?.refreshToken,
-                accessToken: data?.value?.stsTokenManager?.accessToken,
-                expirationTime: data?.value?.stsTokenManager?.expirationTime,
-              },
-            };
-
-            dispatch(setSignIn(userInfo));
-            setLoading(false);
-          }
-        } else {
+  
+        if (!data || !data.value) {
           console.log("data not found");
           dispatch(setSignOut());
-          setLoading(false);
+          return setLoading(false);
         }
-      } catch (error) {
-        console.log("Error retrieving user session:", error);
+  
+        console.log("data found");
+  
+        const { value } = data;
+        const tokenExpirationTime = value?.stsTokenManager?.expirationTime;
+  
+        if (tokenExpirationTime < Date.now()) {
+          console.log("Token has expired");
+          return setLoading(false);
+        }
+  
+        console.log("Token is not expired");
+  
+        const operationType = value?.operationType;
+        const userInfo = {
+          isAuthenticated: true,
+          uid: operationType !== "signIn" ? value?.uid : value?.user?.uid,
+          providerData: {
+            providerId: operationType !== "signIn" ? value?.providerData[0]?.providerId : value?.user?.providerData[0]?.providerId,
+            uid: operationType !== "signIn" ? value?.providerData[0]?.uid : value?.user?.providerData[0]?.uid || null,
+            displayName: operationType !== "signIn" ? value?.providerData[0]?.displayName : value?.user?.providerData[0]?.displayName || null,
+            email: operationType !== "signIn" ? value?.providerData[0]?.email : value?.user?.providerData[0]?.email || null,
+            phoneNumber: operationType !== "signIn" ? value?.providerData[0]?.phoneNumber : value?.user?.providerData[0]?.phoneNumber || null,
+            photoURL: operationType !== "signIn" ? value?.providerData[0]?.photoURL : value?.user?.providerData[0]?.photoURL || null,
+          },
+          stsTokenManager: {
+            refreshToken: operationType !== "signIn" ? value?.stsTokenManager?.refreshToken : value?.user?.stsTokenManager?.refreshToken,
+            accessToken: operationType !== "signIn" ? value?.stsTokenManager?.accessToken : value?.user?.stsTokenManager?.accessToken,
+            expirationTime: operationType !== "signIn" ? value?.stsTokenManager?.expirationTime : value?.user?.stsTokenManager?.expirationTime,
+          },
+        };
+  
+        dispatch(setSignIn(userInfo));
+        setLoading(false);
+      } catch (error: any) {
+        console.log("app route :", error?.message);
       }
     };
-
-    fetchData(); // call the fetchData function
+  
+    fetchData();
   }, []);
+  
 
   useEffect(() => {
     console.log({ isAuthenticated: isAuthenticated });

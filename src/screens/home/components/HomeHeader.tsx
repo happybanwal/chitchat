@@ -22,7 +22,10 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { firestoreDB } from "../../../../config/firebase.config";
+import { firebaseAuth, firestoreDB } from "../../../../config/firebase.config";
+import { signOut } from "firebase/auth";
+import { clearStorage, removeUserSession } from "../../../expostorage/LocalStorage";
+import { setSignOut } from "../../../store/slices/AuthSlice";
 
 interface ProviderData {
   displayName: string;
@@ -54,16 +57,19 @@ const HomeHeader = () => {
 
   const [contact, setContacts] = useState<UserData[]>([]);
   const [user, setUser] = useState(data);
+  
 
   useLayoutEffect(() => {
+    // console.log(user?.uid)
     const msgQuery = query(
-      collection(firestoreDB, "users")
-      //  where("email" , "!=" ,"himanshubanwal2001@gmail.com")
+      collection(firestoreDB, "users"),
+      //  where("email" , "==" ,user?.providerData?.email)
+      where("uid" , "!=" , user?.uid)
     );
 
     const unsubscribe = onSnapshot(msgQuery, (querySnap: any) => {
       const data = querySnap.docs.map((doc: any) => doc.data());
-      // console.log(data);
+      console.log({data});
       setContacts(data);
     });
 
@@ -72,56 +78,27 @@ const HomeHeader = () => {
 
   // flatlist
   const renderItem: ListRenderItem<UserData> = ({ item }) => {
-    const handleConversion = async (item: UserData): Promise<void> => {
-      try {
-        const { uid: senderId } = user;
-        const { uid: receiverId } = item;
-    
-        // Ensure consistent order of user IDs in the document ID
-        const conversationId =
-          senderId < receiverId
-            ? `${senderId}-${receiverId}`
-            : `${receiverId}-${senderId}`;
-    
-        const docRef = doc(firestoreDB, "individualConversations", conversationId);
-        const snapshot = await getDoc(docRef);
-    
-        if (snapshot.exists()) {
-          console.log("Document exists in individualConversations collection");
-          // Conversation already exists, navigate to chat screen immediately
-          navigation.navigate("ChatScreen");
-          return; // Exit the function early
-        }
-    
-        console.log(
-          "Document does not exist in individualConversations collection"
-        );
-    
-        // Document doesn't exist, create it
-        const data = {
-          participants: {
-            [senderId]: true,
-            [receiverId]: true,
-          },
-        };
-    
-        await setDoc(docRef, data);
-        console.log("Conversation document created");
-    
-        // Navigate to chat screen after document creation
-        navigation.navigate("ChatScreen");
-      } catch (error) {
-        console.error("Error handling conversation:", error);
-      }
+    const handleNavigation = () => {
+      const data = {
+        providerData: {
+          displayName: user?.providerData?.displayName,
+          email: user?.providerData?.email,
+          phoneNumber: user?.providerData?.phoneNumber,
+          photoURL: user?.providerData?.photoURL,
+          providerId: user?.providerData?.providerId,
+          uid: user?.providerData?.uid,
+        },
+        uid: user?.uid,
+      };
+
+      navigation.navigate("ChatScreen", {
+        sender: data,
+        receiver: item,
+      });
     };
-    
 
     return (
-      <TouchableOpacity
-        onPress={() => {
-          handleConversion(item);
-        }}
-      >
+      <TouchableOpacity onPress={handleNavigation}>
         <View className="rounded-full  p-2 mr-2 items-center overflow-hidden">
           {item?.providerData?.photoURL != null ? (
             <Image
@@ -156,6 +133,20 @@ const HomeHeader = () => {
     navigation.navigate("Profile");
   };
 
+//   const handleButton = async () => {
+//     try {
+//       await signOut(firebaseAuth); // Sign out the user
+//       await clearStorage(); // Clear user session from storage
+//       await removeUserSession();
+//       dispatch(setSignOut());
+//     } catch (error) {
+//       console.error("Error during sign out:", error);
+//     }
+//   };
+//   useEffect(()=>{
+// handleButton()
+//   },[])
+
   return (
     <View style={{ flex: 1 / 3 }} className="p-6  ">
       {/* 1st half */}
@@ -171,6 +162,7 @@ const HomeHeader = () => {
 
         <IconButton
           icon={"ship-wheel"}
+          // icon={"vector-square"}
           iconColor="white"
           onPress={handleButton}
         />

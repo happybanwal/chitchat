@@ -20,13 +20,32 @@ import { StatusBar } from "expo-status-bar";
 import FloatingTextInput from "../../../components/textInput/FloatingTextinput";
 import MobileInput from "../../../components/mobileInput/MobileInput";
 import CommonButton from "../../../components/button/CommonButton";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { firebaseAuth, firestoreDB } from "../../../../config/firebase.config";
 import GoogleSignIn from "../GoogleSignIn";
 import { doc, setDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { setSignIn } from "../../../store/slices/AuthSlice";
 import { storeUserSession } from "../../../expostorage/LocalStorage";
+
+
+interface UserType {
+  isAuthenticated: boolean;
+  uid: string;
+  providerData: {
+    providerId: string | null;
+    uid: string | null;
+    displayName: string;
+    email: string | null;
+    phoneNumber: string | null;
+    photoURL: string | null;
+  };
+  stsTokenManager: {
+    refreshToken: string | null;
+    accessToken: string | null;
+    expirationTime: number | null;
+  };
+}
 
 const SignUp = () => {
   type signUpScreenProps = NativeStackNavigationProp<
@@ -155,7 +174,6 @@ const SignUp = () => {
     // console.log(text);
   };
 
-  // const auth = getAuth();
   const handleButton = async () => {
     if (
       isValidEmail &&
@@ -169,89 +187,76 @@ const SignUp = () => {
       phoneNumber &&
       password
     ) {
-      // console.log(firstName, lastName, phoneNumber);
-      await createUserWithEmailAndPassword(firebaseAuth, email, password)
-        .then((userCredential: any) => {
-          // Signed up
-          const user = userCredential.user;
-          console.log(JSON.stringify(user, null, 2));
+      const displayName = firstName + " " + lastName;
 
-          const data = {
-            uid: userCredential.user.uid,
-            providerData: {
-              providerId: user?.providerData[0]?.providerId,
-              uid: user?.providerData[0]?.uid || null,
-              displayName: user?.providerData[0]?.displayName || null,
-              email: user?.providerData[0]?.email || null,
-              phoneNumber: user?.providerData[0]?.phoneNumber || null,
-              photoURL: user?.providerData[0]?.photoURL || null,
-            },
-          };
+      try {
+        // Create user with email and password
+        const userCredential = await createUserWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
 
-          const userInfo = {
-            isAuthenticated: true,
-            uid: user?.uid,
-            providerData: {
-              providerId: user?.providerData[0]?.providerId || null,
-              uid: user?.providerData[0]?.uid || null,
-              displayName: user?.providerData[0]?.displayName || null,
-              email: user?.providerData[0]?.email || null,
-              phoneNumber: user?.providerData[0]?.phoneNumber || null,
-              photoURL: user?.providerData[0]?.photoURL || null,
-            },
-            stsTokenManager: {
-              refreshToken: user?.stsTokenManager?.refreshToken || null,
-              accessToken: user?.stsTokenManager?.accessToken || null,
-              expirationTime: user?.stsTokenManager?.expirationTime || null,
-            },
-          };
+        // Get the user from userCredential
+        const user = userCredential.user;
 
-          // setDATABASE in FIRESTORE
-          setDoc(doc(firestoreDB, "users", userCredential?.user.uid), data)
-            .then(() => {
-              console.log("success signup and db creation");
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-          // REDUX
-          dispatch(setSignIn(userInfo));
-          storeUserSession(user);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode);
-          console.log(errorMessage);
-          // ..
+        // Update the user's profile with the display name
+        await updateProfile(user, {
+          displayName: displayName,
         });
+
+        console.log(JSON.stringify(user, null, 2));
+
+        const data = {
+          uid: user.uid,
+          providerData: {
+            providerId: user?.providerData[0]?.providerId,
+            uid: user?.providerData[0]?.uid || null,
+            displayName: displayName,
+            email: user?.providerData[0]?.email || null,
+            phoneNumber: user?.providerData[0]?.phoneNumber || null,
+            photoURL: user?.providerData[0]?.photoURL || null,
+          },
+        };
+
+        const userInfo = {
+          isAuthenticated: true,
+          uid: user.uid,
+          providerData: {
+            providerId: user?.providerData[0]?.providerId || null,
+            uid: user?.providerData[0]?.uid || null,
+            displayName: displayName,
+            email: user?.providerData[0]?.email || null,
+            phoneNumber: user?.providerData[0]?.phoneNumber || null,
+            photoURL: user?.providerData[0]?.photoURL || null,
+          },
+          stsTokenManager: {
+            // @ts-ignore
+            refreshToken: user?.stsTokenManager?.refreshToken || null,
+            // @ts-ignore
+            accessToken: user?.stsTokenManager?.accessToken || null,
+            // @ts-ignore
+            expirationTime: user?.stsTokenManager?.expirationTime || null,
+          },
+        };
+
+        // set DATABASE in FIRESTORE
+        await setDoc(doc(firestoreDB, "users", user.uid), data);
+        console.log("success signup and db creation");
+
+        // REDUX
+        dispatch(setSignIn(userInfo));
+        storeUserSession(user);
+      } catch (error: any) {
+        console.error("Error signing up:", error.code, error.message);
+      }
     } else {
       console.log("no");
       setModalVisible(true);
     }
   };
 
-  const handleRegister = async () => {
-    try {
-      if (email && password) {
-        const userCredential = await createUserWithEmailAndPassword(
-          firebaseAuth,
-          email,
-          password
-        );
-        const user = userCredential.user;
-        console.log(JSON.stringify(user, null, 2));
-      } else {
-        console.log("Fill all fields");
-      }
-    } catch (error:any) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode);
-      console.log(errorMessage);
-    }
-  };
+
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>

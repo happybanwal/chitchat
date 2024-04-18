@@ -13,6 +13,7 @@ export default function App() {
     "Manrope-Medium": require("./assets/fonts/Manrope-Medium.ttf"),
     "Manrope-Regular": require("./assets/fonts/Manrope-Regular.ttf"),
     "Manrope-Light": require("./assets/fonts/Manrope-Light.ttf"),
+    "Manrope-ExtraLight": require("./assets/fonts/Manrope-ExtraLight.ttf"),
     "Manrope-SemiBold": require("./assets/fonts/Manrope-SemiBold.ttf"),
   });
 
@@ -32,3 +33,5 @@ export default function App() {
 
 // #6A5BC2 -> blue
 // #F4F185 ->yellow
+
+// #F6F5F5 -white
