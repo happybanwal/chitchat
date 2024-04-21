@@ -54,6 +54,7 @@ const ChatCard: React.FC<{
       uid: uuid.v4(),
       timeStamp: timeStamp,
       receiver: receiver,
+      sender:sender,
       message: sendMessage,
       status: "unread",
     };

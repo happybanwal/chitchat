@@ -20,6 +20,8 @@ const ChatScreen = ({ route }: any) => {
 
   const { sender, receiver } = route.params;
 
+  // console.log({sender,receiver})
+
   const [chatId, setChatId] = useState("");
 
   const handleConversion = async (): Promise<void> => {

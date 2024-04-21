@@ -10,4 +10,9 @@ export type RootStackParamList = {
     sender: any;
     receiver: any;
   };
+  AddToChatScreen: undefined
+  AddToGroupScreen: undefined
+  Contact:{
+    functionality: string | null
+  }
 };

@@ -204,6 +204,7 @@ const SignUp = () => {
         await updateProfile(user, {
           displayName: displayName,
         });
+        
 
         console.log(JSON.stringify(user, null, 2));
 
@@ -239,6 +240,7 @@ const SignUp = () => {
             expirationTime: user?.stsTokenManager?.expirationTime || null,
           },
         };
+        
 
         // set DATABASE in FIRESTORE
         await setDoc(doc(firestoreDB, "users", user.uid), data);

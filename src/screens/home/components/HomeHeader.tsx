@@ -69,7 +69,7 @@ const HomeHeader = () => {
 
     const unsubscribe = onSnapshot(msgQuery, (querySnap: any) => {
       const data = querySnap.docs.map((doc: any) => doc.data());
-      console.log({data});
+      // console.log({data});
       setContacts(data);
     });
 
@@ -102,12 +102,12 @@ const HomeHeader = () => {
         <View className="rounded-full  p-2 mr-2 items-center overflow-hidden">
           {item?.providerData?.photoURL != null ? (
             <Image
-              className="rounded-full  w-[50px] h-[50px]"
+              className="rounded-full  w-[40px] h-[40px]"
               source={{ uri: item?.providerData?.photoURL }}
             />
           ) : (
             <>
-              <View className="p-2 bg-[#F4F185] rounded-full w-[50px] h-[50px] items-center justify-center">
+              <View className="p-2 bg-[#F4F185] rounded-full w-[40px] h-[40px] items-center justify-center">
                 <Text className="text-center font-[Manrope-Medium]">
                   {item.providerData.displayName
                     .split(" ")
